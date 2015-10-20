@@ -1,6 +1,7 @@
 ###########################################
 # you need to implement five funcitons here
 ###########################################
+from copy import deepcopy
 import random
 
 
@@ -68,7 +69,7 @@ def get_mrv_cell(game):
 def sort_by_lcv(game, mrv_pos):
     all_possible_numbers = game.possible_valid_numbers(mrv_pos[0], mrv_pos[1])
     sorted_numbers_by_lcv = sorted(all_possible_numbers,
-                                   key=lambda x: game.total_constraints(mrv_pos[0], mrv_pos[1], x))
+                                   key=lambda x: game.total_constraints(mrv_pos[0], mrv_pos[1], x), reverse=True)
     return sorted_numbers_by_lcv
 
 
@@ -128,7 +129,44 @@ def backtrackingMRVfwd(filename):
 
 
 def do_backtrackingMRVcp(game):
+    # if game.is_complete_board():
+    #     return True
+    # game.consistency_check += 1
+    # for i in xrange(game.N):
+    #     for j in xrange(game.N):
+    #         if game.board[i][j] == 0:
+    #             mrv_pos = get_mrv_cell(game)
+    #             sorted_numbers_by_MRVcp = sort_by_MRVcp(game, mrv_pos)
+    #             for valid_number in sorted_numbers_by_MRVcp:
+    #                 game.set_cell_value(mrv_pos[0], mrv_pos[1], valid_number)
+    #                 if do_backtrackingMRV(game):
+    #                     return True
+    #                 game.set_cell_empty(mrv_pos[0], mrv_pos[1])
+    #             return False
     return False
+
+
+# def sort_by_MRVcp(game, mrv_pos):
+#     sorted_list_for_MRVcp = sort_by_MrvFwd(game, mrv_pos)
+#     for possible_numbers in sorted_list_for_MRVcp:
+#         game.set_cell_value(mrv_pos[0], mrv_pos[1], possible_numbers)
+#         children_cell_effected = game.get_cells_affected(mrv_pos[0], mrv_pos[1])
+#         for child_cell in children_cell_effected:
+#             possible_numbers_for_child = game.possible_valid_numbers(child_cell[0], child_cell[1])
+#             for possible_child_value in possible_numbers_for_child:
+#                 game.set_cell_value(child_cell[0], child_cell[1], possible_child_value)
+#                 # grandchildren_cell_effected = game.get_cells_affected(child_cell[0], child_cell[1])
+#                 # for grand_child in grandchildren_cell_effected:
+#                 #     possible_numbers_for_grand_child = game.possible_valid_numbers(grand_child[0], grand_child[1])
+#                 #     for possible_grand_child_value in possible_numbers_for_grand_child:
+#                 game.values_to_be_removed_for_MrvFwd = set()
+#                 game.total_constraints(child_cell[0], child_cell[1], possible_child_value)
+#                         # game.total_constraints(grand_child[0], grand_child[1], possible_grand_child_value)
+#                 for values in game.values_to_be_removed_for_MrvFwd:
+#                     sorted_list_for_MRVcp.remove(values)
+#                 game.set_cell_empty(child_cell[0], child_cell[1])
+#         game.set_cell_empty(mrv_pos[0], mrv_pos[1])
+#     return sorted_list_for_MRVcp
 
 
 def backtrackingMRVcp(filename):
@@ -147,24 +185,6 @@ def backtrackingMRVcp(filename):
 
 
 def do_minConflict(game):
-    # initial complete assignment
-    # greedy minimal-conflict values for each variable
-
-    max_steps = 1000
-    for i in xrange(game.N):
-        for j in xrange(game.N):
-
-    for pos in game.get_positions():
-        if not game.is_given(pos):
-            game[pos] = min(game.get_values(),
-                            key=lambda m: game.count_conflicts(pos, m))
-    for _ in xrange(max_steps):
-        if game.solved():
-            return True
-        con_pos = random.choice(game.get_conflicted_positions())
-        lcv_move = min(game.get_values(),
-                       key=lambda m: game.count_conflicts(con_pos, m))
-        game[con_pos] = lcv_move
     return False
 
 
