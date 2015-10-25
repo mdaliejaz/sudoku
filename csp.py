@@ -170,30 +170,6 @@ def sort_by_MRVcp(game, mrv_pos):
     return sorted_list_for_MRVcp
 
 
-
-
-
-#     for possible_numbers in sorted_list_for_MRVcp:
-#         game.set_cell_value(mrv_pos[0], mrv_pos[1], possible_numbers)
-#         children_cell_effected = game.get_cells_affected(mrv_pos[0], mrv_pos[1])
-#         for child_cell in children_cell_effected:
-#             possible_numbers_for_child = game.possible_valid_numbers(child_cell[0], child_cell[1])
-#             for possible_child_value in possible_numbers_for_child:
-#                 game.set_cell_value(child_cell[0], child_cell[1], possible_child_value)
-#                 # grandchildren_cell_effected = game.get_cells_affected(child_cell[0], child_cell[1])
-#                 # for grand_child in grandchildren_cell_effected:
-#                 #     possible_numbers_for_grand_child = game.possible_valid_numbers(grand_child[0], grand_child[1])
-#                 #     for possible_grand_child_value in possible_numbers_for_grand_child:
-#                 game.values_to_be_removed_for_MrvFwd = set()
-#                 game.total_constraints(child_cell[0], child_cell[1], possible_child_value)
-#                         # game.total_constraints(grand_child[0], grand_child[1], possible_grand_child_value)
-#                 for values in game.values_to_be_removed_for_MrvFwd:
-#                     sorted_list_for_MRVcp.remove(values)
-#                 game.set_cell_empty(child_cell[0], child_cell[1])
-#         game.set_cell_empty(mrv_pos[0], mrv_pos[1])
-#     return sorted_list_for_MRVcp
-
-
 def backtrackingMRVcp(filename):
     ###
     # use backtracking + MRV + cp to solve sudoku puzzle here,
