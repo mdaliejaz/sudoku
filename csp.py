@@ -7,7 +7,10 @@ import random
 
 def do_backtracking(game):
     if game.is_complete_board():
-        return True
+        if game.is_valid_sudoku_board():
+            return True
+        else:
+            return False
     game.consistency_check += 1
     for i in xrange(game.N):
         for j in xrange(game.N):
@@ -37,7 +40,10 @@ def backtracking(filename):
 
 def do_backtrackingMRV(game):
     if game.is_complete_board():
-        return True
+        if game.is_valid_sudoku_board():
+            return True
+        else:
+            return False
     game.consistency_check += 1
     for i in xrange(game.N):
         for j in xrange(game.N):
@@ -90,7 +96,10 @@ def backtrackingMRV(filename):
 
 def do_backtrackingMRVfwd(game):
     if game.is_complete_board():
-        return True
+        if game.is_valid_sudoku_board():
+            return True
+        else:
+            return False
     game.consistency_check += 1
     for i in xrange(game.N):
         for j in xrange(game.N):
@@ -185,6 +194,32 @@ def backtrackingMRVcp(filename):
 
 
 def do_minConflict(game):
+    max_counter = 10000
+    conflict_set = []
+
+    # Fill the board with random numbers
+    for i in xrange(game.N):
+        for j in xrange(game.N):
+            if game.board[i][j] == 0:
+                game.board[i][j] = random.randint(1,game.N)
+
+    for counter in xrange(max_counter):
+        game.consistency_check = counter + 1
+        # Check if the current board is the solution or not. If yes then return TRUE.
+        if game.is_valid_sudoku_board():
+            return True
+        # Find the set of conflicting cells
+        for i in xrange(game.N):
+            for j in xrange(game.N):
+                if game.is_conflicting(i, j):
+                    conflict_set.append([i, j])
+        # Randomly choose a conflicting cell from the conflicting set
+        conflicting_cell = random.choice(conflict_set)
+        # Find the number for that cell that minimizes the conflict
+        min_conflicting_num = game.find_min_conflicting_num(conflicting_cell[0], conflicting_cell[1])
+        # Set that number to the cell
+        game.board[conflicting_cell[0]][conflicting_cell[1]] = min_conflicting_num
+
     return False
 
 
@@ -293,3 +328,83 @@ class sudoku():
             total_possible_numbers += current_length
         self.set_cell_empty(i, j)
         return total_possible_numbers
+
+    def is_valid_sudoku_board(self):
+        valid_row = set()
+        valid_column = set()
+        valid_matrix = set()
+        # Check duplicity in the rows and columns
+        for row in xrange(self.N):
+            valid_row.clear()
+            valid_column.clear()
+            for column in xrange(self.N):
+                if self.board[row][column] == 0 or self.board[column][row] == 0:
+                    return False
+                valid_row.add(self.board[row][column])
+                valid_column.add(self.board[column][row])
+            if self.N != len(valid_row) or self.N != len(valid_column):
+                return False
+
+        # Check duplicity in the smaller matrix
+        for i in xrange(self.N/self.M):
+            for j in xrange(self.N/self.K):
+                row = i * self.M
+                column = j * self.K
+                valid_matrix.clear()
+                for counter in xrange(self.N):
+                    if self.board[row + counter / self.K][column + counter % self.K] == 0:
+                        return False
+                    valid_matrix.add(self.board[row + counter / self.K][column + counter % self.K])
+                if self.N != len(valid_matrix):
+                    return False
+
+        return True
+
+    def is_conflicting(self, i, j):
+        block_start_row = i / self.M * self.M
+        block_start_column = j / self.K * self.K
+        for counter in xrange(self.N):
+            if counter != j:
+                if self.board[i][counter] == self.board[i][j]:
+                    return True
+            if counter != i:
+                if self.board[counter][j] == self.board[i][j]:
+                    return True
+            if (block_start_row + counter / self.K) != i and (block_start_column + counter % self.K) != j:
+                if self.board[block_start_row + counter / self.K][block_start_column + counter % self.K] == self.board[i][j]:
+                    return True
+        return False
+
+    def find_min_conflicting_num(self, i, j):
+        # find the frequency of each number from 1 to N in the relevant row, column and submatrix
+        block_start_row = i / self.M * self.M
+        block_start_column = j / self.K * self.K
+        master_list = []
+        master_list.append(self.board[i][j])
+        for counter in xrange(self.N):
+            if counter != j:
+                master_list.append(self.board[i][counter])
+            if counter != i:
+                master_list.append(self.board[counter][j])
+            if (block_start_row + counter / self.K) != i and (block_start_column + counter % self.K) != j:
+                master_list.append(self.board[block_start_row + counter / self.K][block_start_column + counter % self.K])
+        # Build a dictionary
+        dict_list = {x:master_list.count(x) for x in master_list}
+        # If there are numbers between 1 to N which are not assigned in any of the relevant row, column or submatrix
+        # then return a random value out of those numbers
+        if len(dict_list.keys()) != self.N:
+            return random.choice(list(set(range(1, self.N + 1)) - set(dict_list.keys())))
+        else:
+            # Return the number with the least frequency
+            return dict_list.keys()[dict_list.values().index(min(dict_list.values()))]
+
+
+
+
+
+
+
+
+
+
+
