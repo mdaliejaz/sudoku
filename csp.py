@@ -115,6 +115,7 @@ def do_backtrackingMRVfwd(game):
 
 
 def sort_by_MrvFwd(game, mrv_pos):
+    game.values_to_be_removed_for_MrvFwd = set()
     sorted_list_for_MrvFwd = sort_by_lcv(game, mrv_pos)
     for values in game.values_to_be_removed_for_MrvFwd:
         sorted_list_for_MrvFwd.remove(values)
@@ -138,25 +139,40 @@ def backtrackingMRVfwd(filename):
 
 
 def do_backtrackingMRVcp(game):
-    # if game.is_complete_board():
-    #     return True
-    # game.consistency_check += 1
-    # for i in xrange(game.N):
-    #     for j in xrange(game.N):
-    #         if game.board[i][j] == 0:
-    #             mrv_pos = get_mrv_cell(game)
-    #             sorted_numbers_by_MRVcp = sort_by_MRVcp(game, mrv_pos)
-    #             for valid_number in sorted_numbers_by_MRVcp:
-    #                 game.set_cell_value(mrv_pos[0], mrv_pos[1], valid_number)
-    #                 if do_backtrackingMRV(game):
-    #                     return True
-    #                 game.set_cell_empty(mrv_pos[0], mrv_pos[1])
-    #             return False
+    if game.is_complete_board():
+        return True
+    game.consistency_check += 1
+    for i in xrange(game.N):
+        for j in xrange(game.N):
+            if game.board[i][j] == 0:
+                mrv_pos = get_mrv_cell(game)
+                sorted_numbers_by_MRVcp = sort_by_MRVcp(game, mrv_pos)
+                for valid_number in sorted_numbers_by_MRVcp:
+                    game.set_cell_value(mrv_pos[0], mrv_pos[1], valid_number)
+                    if do_backtrackingMRV(game):
+                        return True
+                    game.set_cell_empty(mrv_pos[0], mrv_pos[1])
+                return False
     return False
 
 
-# def sort_by_MRVcp(game, mrv_pos):
-#     sorted_list_for_MRVcp = sort_by_MrvFwd(game, mrv_pos)
+def sort_by_MRVcp(game, mrv_pos):
+    pos = mrv_pos
+    sorted_list_for_MRVcp = sort_by_MrvFwd(game, pos)
+    for value in sorted_list_for_MRVcp:
+        game.set_cell_value(pos[0], pos[1], value)
+        for affected_cell in game.get_cells_affected(pos[0], pos[1]):
+            new_array = sort_by_MrvFwd(game, affected_cell)
+            if not new_array:
+                sorted_list_for_MRVcp.remove(value)
+                break
+        game.set_cell_empty(pos[0], pos[1])
+    return sorted_list_for_MRVcp
+
+
+
+
+
 #     for possible_numbers in sorted_list_for_MRVcp:
 #         game.set_cell_value(mrv_pos[0], mrv_pos[1], possible_numbers)
 #         children_cell_effected = game.get_cells_affected(mrv_pos[0], mrv_pos[1])
