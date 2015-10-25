@@ -1,7 +1,6 @@
 ###########################################
 # you need to implement five funcitons here
 ###########################################
-from copy import deepcopy
 import random
 
 
@@ -193,7 +192,7 @@ def do_minConflict(game):
     for i in xrange(game.N):
         for j in xrange(game.N):
             if game.board[i][j] == 0:
-                game.board[i][j] = random.randint(1,game.N)
+                game.board[i][j] = random.randint(1, game.N)
 
     for counter in xrange(max_counter):
         game.consistency_check = counter + 1
@@ -338,8 +337,8 @@ class sudoku():
                 return False
 
         # Check duplicity in the smaller matrix
-        for i in xrange(self.N/self.M):
-            for j in xrange(self.N/self.K):
+        for i in xrange(self.N / self.M):
+            for j in xrange(self.N / self.K):
                 row = i * self.M
                 column = j * self.K
                 valid_matrix.clear()
@@ -363,7 +362,8 @@ class sudoku():
                 if self.board[counter][j] == self.board[i][j]:
                     return True
             if (block_start_row + counter / self.K) != i and (block_start_column + counter % self.K) != j:
-                if self.board[block_start_row + counter / self.K][block_start_column + counter % self.K] == self.board[i][j]:
+                if self.board[block_start_row + counter / self.K][block_start_column + counter % self.K] == \
+                        self.board[i][j]:
                     return True
         return False
 
@@ -379,9 +379,10 @@ class sudoku():
             if counter != i:
                 master_list.append(self.board[counter][j])
             if (block_start_row + counter / self.K) != i and (block_start_column + counter % self.K) != j:
-                master_list.append(self.board[block_start_row + counter / self.K][block_start_column + counter % self.K])
+                master_list.append(
+                    self.board[block_start_row + counter / self.K][block_start_column + counter % self.K])
         # Build a dictionary
-        dict_list = {x:master_list.count(x) for x in master_list}
+        dict_list = {x: master_list.count(x) for x in master_list}
         # If there are numbers between 1 to N which are not assigned in any of the relevant row, column or submatrix
         # then return a random value out of those numbers
         if len(dict_list.keys()) != self.N:
@@ -389,14 +390,3 @@ class sudoku():
         else:
             # Return the number with the least frequency
             return dict_list.keys()[dict_list.values().index(min(dict_list.values()))]
-
-
-
-
-
-
-
-
-
-
-
